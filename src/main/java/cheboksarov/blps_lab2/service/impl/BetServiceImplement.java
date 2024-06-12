@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class BetServiceImplement implements BetService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> doBet(DoBetDto doBetDto) throws Exception {
         if((doBetDto.getMatchId() == null) | (doBetDto.getBet() == null)
             | (doBetDto.getEvent() == null)
@@ -61,10 +63,15 @@ public class BetServiceImplement implements BetService {
         user.setBalance(user.getBalance()- doBetDto.getBet());
         Bet.BetEvent event = BetUtils.validateEventString(doBetDto.getEvent());
         Coefficient coefficient = match.getCoefficient();
+        errorSimulation();
         Bet bet = Bet.builder().siteUser(user).betEvent(event)
                 .coefficient(coefficient).build();
         betRepository.save(bet);
         return new ResponseEntity<>("Your bet is accepted!", HttpStatus.OK);
 
+    }
+
+    public void errorSimulation(){
+        throw new RuntimeException("Simulated error");
     }
 }

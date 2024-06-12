@@ -9,6 +9,7 @@ import cheboksarov.blps_lab2.service.StatisticsService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,15 +29,21 @@ public class MatchServiceImplement implements MatchService {
     }
 
     @Override
+    @Transactional
     public Match saveMatch(Match match) {
         if (match.getCoefficient() == null){
             match.setCoefficient(coefficientService.createDefaultCoefficient());
         }
+        //errorSimulation();
         if((match.getGuestsStat() == null) & (match.getHostsStat() == null)){
             match.setGuestsStat(statisticsService.createDefaultStatistics());
             match.setHostsStat(statisticsService.createDefaultStatistics());
         }
         return matchRepository.save(match);
+    }
+
+    public void errorSimulation(){
+        throw new RuntimeException("Simulated error");
     }
 
     @Override

@@ -8,6 +8,7 @@ import cheboksarov.blps_lab2.service.CredentialService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ public class CredentialServiceImplement implements CredentialService {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public Credential registerNewUser(Credential credential) {
         SiteUser siteUser = SiteUser.builder().credential(credential)
                         .balance(0.0).firstName("").lastName("")
