@@ -1,5 +1,7 @@
 package cheboksarov.blps_lab2.config;
 
+import cheboksarov.blps_lab2.model.Permissions;
+import cheboksarov.blps_lab2.model.Role;
 import cheboksarov.blps_lab2.service.impl.MyUserDetailService;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
@@ -35,12 +39,34 @@ public class SecurityConfig {
             .authorizeHttpRequests((authorize) ->
                authorize
                        .requestMatchers("api/v1/authenticate/**").permitAll()
+                       //.requestMatchers("api/v1/match/save_match/**").hasAuthority(Role.ADMIN.name())
+                       .requestMatchers("api/v1/match/save_match/**")
+                           .hasAuthority(Permissions.CREATE_MATCH.name())
+                       .requestMatchers("api/v1/match/**")
+                           .hasAuthority(Permissions.GET_MATCHES.name())
+                       .requestMatchers("api/v1/match/update")
+                           .hasAuthority(Permissions.UPDATE_MATCH.name())
+                       .requestMatchers("api/v1/statistics/save_statistics")
+                           .hasAuthority(Permissions.CREATE_STATISTIC.name())
+                       .requestMatchers("api/v1/statistics/**")
+                           .hasAuthority(Permissions.GET_STATISTIC.name())
+                       .requestMatchers("api/v1/coeff/save_coeff")
+                           .hasAuthority(Permissions.CREATE_COEFFICIENT.name())
+                       .requestMatchers("api/v1/coeff/**")
+                           .hasAuthority(Permissions.GET_COEFFICIENT.name())
+                       .requestMatchers("api/v1/user/getAll")
+                           .hasAuthority(Permissions.GET_USERS.name())
+                       .requestMatchers("api/v1/user/**").hasRole(Role.USER.name())
+                       .requestMatchers("api/v1/bet/doBet")
+                           .hasRole(Role.USER.name())
+                       .requestMatchers("api/v1/bet/getMyAllBets")
+                           .hasRole(Role.USER.name())
                        .anyRequest().authenticated()
             ).sessionManagement(httSessionManagement ->
                 httSessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

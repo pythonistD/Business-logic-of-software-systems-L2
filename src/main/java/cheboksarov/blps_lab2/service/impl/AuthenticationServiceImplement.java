@@ -4,11 +4,13 @@ import cheboksarov.blps_lab2.controller.AuthenticationResponse;
 import cheboksarov.blps_lab2.dto.AuthenticationRequestDto;
 import cheboksarov.blps_lab2.dto.RegisterRequestDto;
 import cheboksarov.blps_lab2.model.Credential;
+import cheboksarov.blps_lab2.model.Role;
 import cheboksarov.blps_lab2.model.SiteUser;
 import cheboksarov.blps_lab2.repository.CredentialRepository;
 import cheboksarov.blps_lab2.service.AuthenticationService;
 import cheboksarov.blps_lab2.service.JwtService;
 import cheboksarov.blps_lab2.service.SiteUserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,15 +39,19 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                 .token(token).build();
     }
 
+    @Transactional
     @Override
     public AuthenticationResponse register(RegisterRequestDto requestDto) {
         var credential = Credential.builder()
                 .userName(requestDto.getUsername())
-                .password(passwordEncoder.encode(requestDto.getPassword())).build();
+                .password(passwordEncoder.encode(requestDto.getPassword()))
+                .role(Role.USER)
+                .build();
         credentialRepository.save(credential);
         var siteUser = SiteUser.builder()
                 .firstName(requestDto.getFirstName())
                 .lastName(requestDto.getLastName())
+                .balance(0.0)
                 .credential(credential).build();
         siteUserService.createNewUser(siteUser);
         var token = jwtService.generateToken(credential);

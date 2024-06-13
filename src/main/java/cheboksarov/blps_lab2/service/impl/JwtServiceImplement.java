@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtServiceImplement implements JwtService {
-    private static final String SECRET = "d878e8edbbb938d9c7c8ec77a975e4eb1a27cd32ee8ded6921e4dfac4b2d048f";
+    private static final String SECRET = "HVuSXLecuy1Tg96msAedYfGjR8i4QBBJAkqTj58e8EY";
     SecretKey key = Jwts.SIG.HS256.key().build();
 
     @Override
@@ -79,8 +79,8 @@ public class JwtServiceImplement implements JwtService {
     }
 
     private SecretKey generateKey(){
-        /*byte[] bytes = Decoders.BASE64.decode(SECRET);
-        return Keys.hmacShaKeyFor(bytes);*/
-        return key;
+        byte[] bytes = Decoders.BASE64.decode(SECRET);
+        return Keys.hmacShaKeyFor(bytes);
+        //return key;
     }
 }

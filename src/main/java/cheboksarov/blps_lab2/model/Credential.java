@@ -25,14 +25,14 @@ public class Credential implements UserDetails {
     @Column(unique = true)
     private String userName;
     private String password;
-    //@ColumnDefault("USER")
     @Enumerated(EnumType.STRING)
     private Role role;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return role.getAuthorities();
+        //return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

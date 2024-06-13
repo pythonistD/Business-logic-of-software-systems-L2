@@ -63,7 +63,7 @@ public class BetServiceImplement implements BetService {
         user.setBalance(user.getBalance()- doBetDto.getBet());
         Bet.BetEvent event = BetUtils.validateEventString(doBetDto.getEvent());
         Coefficient coefficient = match.getCoefficient();
-        errorSimulation();
+        //errorSimulation();
         Bet bet = Bet.builder().siteUser(user).betEvent(event)
                 .coefficient(coefficient).build();
         betRepository.save(bet);
