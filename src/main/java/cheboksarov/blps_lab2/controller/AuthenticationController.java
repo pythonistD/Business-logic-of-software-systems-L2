@@ -1,6 +1,9 @@
 package cheboksarov.blps_lab2.controller;
 
+import cheboksarov.blps_lab2.dto.AuthenticationRequestDto;
+import cheboksarov.blps_lab2.dto.RegisterRequestDto;
 import cheboksarov.blps_lab2.model.Credential;
+import cheboksarov.blps_lab2.service.AuthenticationService;
 import cheboksarov.blps_lab2.service.CredentialService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,34 +24,32 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/authenticate")
 @AllArgsConstructor
 public class AuthenticationController {
-    private final CredentialService credentialService;
-    private final AuthenticationManager provider;
-    //private final PasswordEncoder passwordEncoder;
+    private final AuthenticationService authenticationService;
     @PostMapping("register")
-    public Credential register(@RequestBody Credential credential){
-        return credentialService.registerNewUser(credential);
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequestDto registrationRequest, HttpServletRequest request, HttpServletResponse response){
+        try {
+            return ResponseEntity.ok(authenticationService.register(registrationRequest));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new AuthenticationResponse(
+                            "",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 
     @PostMapping("logIn")
-    public ResponseEntity<?> logIn(@RequestBody Credential credential, HttpServletRequest request, HttpServletResponse response){
-        log.info("I'm Here in Login endpoint!");
+    public ResponseEntity<?> logIn(@RequestBody AuthenticationRequestDto authRequest, HttpServletRequest request, HttpServletResponse response){
         try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(credential.getUserName(), credential.getPassword());
-            log.info("Authentication: " + authenticationToken);
-            Authentication authenticationResponse = provider.authenticate(authenticationToken);
-            log.info("Credentials: " + authenticationResponse.getCredentials());
-            SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
-            if (authenticationResponse.isAuthenticated()) {
-                return new ResponseEntity<>("Successfully Authenticated!", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("Authentication Error!", HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            log.error("Error:" + e.getMessage());
-            log.error("Cause:" + e.getCause());
-            log.error("Exception:" + e);
-            return new ResponseEntity<>("Authentication Error!", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.ok(authenticationService.logIn(authRequest));
+        }catch  (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new AuthenticationResponse(
+                            "",
+                            e.getMessage()
+                    )
+            );
         }
     }
 }

@@ -24,6 +24,10 @@ public class MyUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.error("My User Detail Service:" + username);
         Optional<Credential> user = credentialRepository.findByUserName(username);
-        return user.map(MyUserDetails::new).orElseThrow(() -> new UsernameNotFoundException("No Users with this username: "+ username));
+        if(user.isPresent()){
+            return user.get();
+        }else{
+            throw new UsernameNotFoundException("User not found");
+        }
     }
 }

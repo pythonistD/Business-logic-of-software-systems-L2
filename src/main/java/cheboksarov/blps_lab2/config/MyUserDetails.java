@@ -15,9 +15,7 @@ public class MyUserDetails implements UserDetails {
     private Credential credential;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(credential.getRole().split(", "))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        return null;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return credential.getUserName();
+        return credential.getUsername();
     }
 
     @Override
