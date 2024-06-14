@@ -1,0 +1,1 @@
+scp /c/Users/Professional/JavaProjects/bpls_lab2/build/libs/blps_lab2-0.0.1-SNAPSHOT.jar helios:~/blps_lab2

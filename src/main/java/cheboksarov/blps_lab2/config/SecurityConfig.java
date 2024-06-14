@@ -38,7 +38,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) ->
                authorize
-                       .requestMatchers("api/v1/authenticate/**").permitAll()
+                       .requestMatchers("api/v1/authenticate/**", "swagger-ui/**").permitAll()
                        //.requestMatchers("api/v1/match/save_match/**").hasAuthority(Role.ADMIN.name())
                        .requestMatchers("api/v1/match/save_match/**")
                            .hasAuthority(Permissions.CREATE_MATCH.name())
